@@ -96,30 +96,30 @@
       inset: 0;
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: flex-end;   /* pin both buttons to the bottom of the banner */
       gap: 10px;
-      padding: 0 14px;
+      padding: 0 10px 8px 10px; /* breathing room from the bottom edge */
     }
 
     #timer-box {
-      height: 52px;
-      padding: 0 18px;
+      height: 36px;
+      padding: 0 12px;
       background: linear-gradient(135deg, var(--timer-a), var(--timer-b));
-      border-radius: 12px;
+      border-radius: 8px;
       display: flex; justify-content: center; align-items: center;
       font-family: 'Fredoka', sans-serif; font-weight: 600;
-      font-size: 24px; color: #FFF;
-      box-shadow: 0 4px 14px rgba(56, 189, 248, 0.4);
+      font-size: 17px; color: #FFF;
+      box-shadow: 0 3px 10px rgba(56, 189, 248, 0.4);
     }
 
     #btn-reset {
-      height: 52px;
-      padding: 0 18px;
+      height: 36px;
+      padding: 0 12px;
       background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      border-radius: 12px;
-      font-weight: 800; color: #FFF; border: none; font-size: 18px;
+      border-radius: 8px;
+      font-weight: 800; color: #FFF; border: none; font-size: 13px;
       cursor: pointer;
-      box-shadow: 0 4px 14px rgba(251, 113, 133, 0.4);
+      box-shadow: 0 3px 10px rgba(251, 113, 133, 0.4);
       transition: transform 0.12s, box-shadow 0.12s;
     }
     #btn-reset:active { transform: scale(0.95); box-shadow: 0 2px 6px rgba(251, 113, 133, 0.35); }
@@ -185,7 +185,7 @@
       width: 100%;
       aspect-ratio: 853 / 208.74;
       border-radius: 18px;
-      overflow: hidden;
+      overflow: visible; /* allow word-bank pills to show above/below the banner image */
       box-shadow: 0 10px 24px rgba(79, 70, 229, 0.3);
     }
 
@@ -195,25 +195,28 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+      border-radius: 18px; /* re-apply since overflow is now visible */
       display: block;
     }
 
     #word-bank {
+      /* Absolutely positioned at the very top of the bottom banner so the
+         pills sit in front of the artwork. overflow:visible on the banner
+         lets any extra rows flow below the banner boundary naturally. */
+      position: absolute;
+      top: 6px;
+      left: 0;
+      right: 0;
       display: flex; flex-wrap: wrap; justify-content: center;
-      gap: calc(10px * var(--pill-scale));
-      width: 100%; padding: 0 8px;
-      /* Pulled up to sit on top of the lower portion of the bottom banner.
-         Word count varies each round, so word-bank stays in normal flow and
-         simply grows downward past the banner rather than being boxed into
-         a fixed-height container. */
-      margin-top: -60px;
-      position: relative;
+      gap: calc(7px * var(--pill-scale));
+      padding: 0 8px;
+      z-index: 2;
     }
 
     .word-pill {
       background: var(--cell); border-radius: 999px;
-      padding: calc(13px * var(--pill-scale)) calc(22px * var(--pill-scale));
-      font-weight: 800; font-size: calc(22px * var(--pill-scale)); color: var(--ink);
+      padding: calc(9px * var(--pill-scale)) calc(15px * var(--pill-scale));
+      font-weight: 800; font-size: calc(15px * var(--pill-scale)); color: var(--ink);
       border: 2px solid rgba(79,70,229,0.12);
       box-shadow: 0 3px 10px rgba(79,70,229,0.14);
       transition: all 0.3s;
@@ -379,8 +382,10 @@
       </div>
     </div>
     <div id="grid"></div>
-    <div id="bottom-banner"><img id="bottom-banner-img" alt=""></div>
-    <div id="word-bank"></div>
+    <div id="bottom-banner">
+      <img id="bottom-banner-img" alt="">
+      <div id="word-bank"></div>
+    </div>
     <div id="best-time-display"><span id="best-time-label">BEST (this device)</span><span id="best-time-value">--:--</span></div>
   </div>
 
@@ -686,8 +691,21 @@
       // before we read layout — otherwise we'd be measuring stale sizes.
       requestAnimationFrame(() => {
         const rect = container.getBoundingClientRect();
-        const available = window.innerHeight - rect.top - 20; // 20px safety buffer + body's own bottom padding
-        const needed = rect.height;
+
+        // Word-bank is now absolutely positioned inside #bottom-banner so it
+        // doesn't contribute to container height. Measure how much (if any)
+        // the pills overflow below the banner and add that to needed.
+        const bottomBanner = document.getElementById('bottom-banner');
+        const wordBank = document.getElementById('word-bank');
+        let wordBankOverflow = 0;
+        if (bottomBanner && wordBank) {
+          const bannerBottom = bottomBanner.getBoundingClientRect().bottom;
+          const wordBankBottom = wordBank.getBoundingClientRect().bottom;
+          wordBankOverflow = Math.max(0, wordBankBottom - bannerBottom);
+        }
+
+        const available = window.innerHeight - rect.top - 20; // 20px safety buffer
+        const needed = rect.height + wordBankOverflow;
 
         if (needed <= available) return; // already fits — nothing to change
 
