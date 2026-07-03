@@ -130,35 +130,28 @@
       grid-template-columns: repeat(10, 1fr);
       grid-template-rows: repeat(10, 1fr);
       gap: 4px;
-      background: linear-gradient(135deg, var(--board-a), var(--board-b));
+      background: #FFFFFF;
       border: 8px solid var(--accent-2);
       border-radius: 20px;
       width: 100%;
-      /* aspect-ratio removed: JS always sets explicit width+height, so this
-         is redundant. On Safari iOS it can compete with the JS-set height
-         during fr-unit row layout, causing the last row to overflow the
-         border. Chrome never shows this, which is why it only appeared on
-         the real iPhone and not in desktop testing. */
-      overflow: hidden; /* guard: any sub-pixel fr rounding stays inside the border */
-      box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.35), inset 0 4px 10px rgba(30, 27, 75, 0.3), 0 14px 32px rgba(79, 70, 229, 0.35);
+      overflow: hidden;
+      box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.35), 0 14px 32px rgba(79, 70, 229, 0.35);
       touch-action: none;
       user-select: none;
       -webkit-user-select: none;
     }
 
     .grid-cell {
-      background: linear-gradient(180deg, #FFFFFF 0%, var(--cell) 55%, #F1ECDD 100%);
+      background: #FFFFFF;
       display: flex;
       justify-content: center;
       align-items: center;
       font-family: 'Fredoka', sans-serif;
       font-weight: 500;
       color: var(--ink);
-      font-size: clamp(15px, 5.5vw, 26px); 
-      text-shadow: 0 1.5px 0 rgba(79,70,229,0.18);
-      border-radius: 8px;
-      box-shadow: 0 3px 0 rgba(79,70,229,0.28), inset 0 1px 0 rgba(255,255,255,0.9);
-      transition: transform 0.1s, background 0.15s, box-shadow 0.1s;
+      font-size: clamp(15px, 5.5vw, 26px);
+      border-radius: 6px;
+      transition: transform 0.1s, background 0.15s;
     }
 
     .grid-cell.active-selection {

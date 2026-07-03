@@ -8,7 +8,7 @@
 //     served from cache when available; only hits the network on a miss.
 //     These rarely change so this keeps load times fast.
 // Bump CACHE_VERSION if you need to force-evict old cached external assets.
-const CACHE_VERSION = 'jwordsearch-v1';
+const CACHE_VERSION = 'jwordsearch-v2';
 
 // App shell: same-origin files this page needs to run.
 const APP_SHELL = [
